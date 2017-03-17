@@ -45,6 +45,7 @@ gulp.task('release', ['clean-release','compile'], function() {
 
 	return merge(
 			bundleOne('src/monaco.contribution'),
+			bundleOne('src/abap'),
 			bundleOne('src/bat'),
 			bundleOne('src/css'),
 			bundleOne('src/coffee'),

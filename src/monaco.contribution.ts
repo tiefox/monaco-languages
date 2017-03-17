@@ -50,7 +50,12 @@ function registerLanguage(def:ILang): void {
 	});
 }
 
-
+registerLanguage({
+	id: 'abap',
+	extensions: [ '.abap'],
+	aliases: [ 'ABAP', 'abap' ],
+	module: './abap'
+});
 registerLanguage({
 	id: 'bat',
 	extensions: [ '.bat', '.cmd'],

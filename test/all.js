@@ -24,6 +24,7 @@ requirejs([
 	'vs/editor/editor.main'
 ], function() {
 	requirejs([
+		'out/test/abap.test',
 		'out/test/bat.test',
 		'out/test/css.test',
 		'out/test/coffee.test',
