@@ -17,6 +17,9 @@ export var conf:IRichLanguageConfiguration = {
 		{ open: '\'', close: '\'', notIn: ['string', 'comment'] },
 		{ open: '[', close: ']', notIn: ['string', 'comment'] },
 		{ open: '(', close: ')', notIn: ['string', 'comment'] },
+		{ open: '{', close: '}', notIn: ['string', 'comment'] },
+		{ open: '|', close: '|', notIn: ['string', 'comment'] },
+		{ open: '`', close: '`', notIn: ['string', 'comment'] }
 	]
 	// enhancedBrackets:[
 	// 	{ openTrigger: 'n', open: /begin$/i, closeComplete: 'end', matchCase: true },
@@ -26,6 +29,8 @@ export var conf:IRichLanguageConfiguration = {
 };
 
 export var language = <ILanguage> {
+	name: 'abap',
+
 	defaultToken: '',
 	tokenPostfix: '.abap',
 	ignoreCase: true,
@@ -996,8 +1001,13 @@ export var language = <ILanguage> {
 			{ include: '@strings' },
 			{ include: '@complexIdentifiers' },
 			{ include: '@scopes' },
-			[/[;,.]/, 'delimiter'],
+			[/[\.]/, 'delimiter'],
 			[/[()]/, '@brackets'],
+			{ include: '@mainIdentifiers'}
+			{ include: '@operator'}
+		],
+
+		mainIdentifiers: [
 			[/([\w@#$]\-[\w@#$]|[\w@#$])+/ig, { cases: {
 							'@keywords': 'keyword',
 							'@operators': 'operator',
@@ -1005,8 +1015,12 @@ export var language = <ILanguage> {
 							'@builtinFunctions': 'predefined',
 							'@default': 'identifier' }
 						}],
-			[/\s[(\+|\-|\*|\*\*|/|%)]\s/, 'operator'],
 		],
+
+		operator: [
+			[/(\*{2})|([\+\-\*\/\%\=])/, 'operator'],
+		],
+
 		whitespace: [
 			[/\s+/, 'white']
 		],
@@ -1030,18 +1044,33 @@ export var language = <ILanguage> {
 		strings: [
 			[/N'/, { token: 'string', next: '@string' }],
 			[/'/, { token: 'string', next: '@string' }],
-			[/`/, { token: 'string', next: '@stringBacktick' }]
+			[/`/, { token: 'string', next: '@stringBacktick' }],
+			[/\|/, { token: 'string', next: '@stringPipe' }]
 		],
 		string: [
 			[/[^']+/, 'string'],
-			[/''/, 'string'],
 			[/'/, { token: 'string', next: '@pop' }]
 		],
-
 		stringBacktick: [
 			[/[^`]+/, 'string'],
-			[/``/, 'string'],
 			[/`/, { token: 'string', next: '@pop' }]
+		],
+		stringPipe: [
+			[/\{/, { token: 'operator', next: '@interpolatedexpression' }],
+			[/\|/, { token: 'string', next: '@pop' }],
+			[/./, { token: 'string' }]
+		],
+		interpolatedexpression: [
+			[ /\{/, { token: 'operator', next: '@interpolatedexpression' }],
+			[ /\}/, { token: 'operator', next: '@pop' } ],
+			{ include: '@whitespace' },
+			{ include: '@pseudoColumns' },
+			{ include: '@numbers' },
+			{ include: '@strings' },
+			{ include: '@complexIdentifiers' },
+			{ include: '@scopes' },
+			{ include: '@mainIdentifiers'},
+			{ include : '@operator'}
 		],
 		complexIdentifiers: [
 			[/\[/, { token: 'identifier.quote', next: '@bracketedIdentifier' }],
